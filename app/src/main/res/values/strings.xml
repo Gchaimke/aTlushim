@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">aTlushim</string>
+    <string name="action_settings">הגדרות</string>
+    <string name="password">סיסמה</string>
+    <string name="user">שם משתמש</string>
+    <string name="login">כניסה</string>
+    <string name="login_header">כניסה לאתר tlushim.co.il</string>
+    <string name="login_image">Login Image</string>
+    <string name="overHours">שעות נוספות</string>
+    <string name="lessHours">אי השלמת תקן</string>
+    <string name="youLess">אתא בחוסר</string>
+    <string name="youMore">אתא ביתר</string>
+    <string name="taarih">תאריך</string>
+    <string name="knisa">כניסה</string>
+    <string name="yeciya">יציא</string>
+    <string name="sah_hacol">סך הכול</string>
+</resources>
