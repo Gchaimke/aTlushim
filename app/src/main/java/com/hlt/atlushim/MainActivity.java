@@ -66,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
             pBar.setVisibility(View.VISIBLE);
             saveData();
             mAsync = new MyAsyncTask(this);
-            String site = "https://www.tlushim.co.il/main.php?op=start"; //"https://www.tlushim.co.il/main.php?op=atnd&month=2020_01";
+            //String site = "https://www.tlushim.co.il/main.php?op=start"; //;
+            String site = "https://www.tlushim.co.il/main.php?op=atnd&month=2019_09";
             mAsync.execute(etUser.getText().toString(), etPass.getText().toString(),site);
         }
     }
@@ -95,12 +96,13 @@ public class MainActivity extends AppCompatActivity {
                     taarih.setText(rows[i][1] + " " + rows[i][2]);
                     if (rows[i][3].equals("08:00") && rows[i][4].equals("16:24")) {
                         TextView in = item.findViewById(R.id.in);
-                        in.setText("מחלה");
+                        in.setText(rows[i][6]);
                     } else {
                         TextView in = item.findViewById(R.id.in);
                         in.setText(rows[i][3]);
                         TextView out = item.findViewById(R.id.out);
-                        out.setText(rows[i][4]);
+                        if(!rows[i][3].equals("חג"))
+                            out.setText(rows[i][4]);
                     }
                     if (rows[i].length > 5) {
                         TextView total = item.findViewById(R.id.total);
