@@ -58,25 +58,12 @@ class HtmlParser {
             for (int i = 1; i < rows.size(); i++) {
                 StringBuilder tmpString = new StringBuilder();
                 for (Element cell : rows.get(i).getAllElements()) {
-                    row = rows.get(i);
-                    if (!cell.text().isEmpty() &&
-                            !cell.text().equals(":") &&
-                            !cell.text().equals("\r") &&
-                            !cell.text().equals("\r\n") &&
-                            !cell.text().equals("\n") &&
-                            !cell.text().equals(" ") &&
-                            !cell.text().contains("רגיל") &&
-                            !cell.text().contains("0.50") &&
-                            !cell.text().contains("8.40") &&
-                            !row.text().contains("שישי") &&
-                            !row.text().contains("שבת") &&
-                            !cell.text().contains("תיאור")) {
-                            tmpString.append(",").append(cell.text());
-                    }
+                    //old cells cleaner : if (!cell.text().isEmpty() && !cell.text().equals(":") &&!cell.text().equals("\r") && !cell.text().equals("\r\n") && !cell.text().equals("\n") && !cell.text().equals(" ") && !cell.text().contains("רגיל") && !cell.text().contains("0.50") &&  !cell.text().contains("8.40") &&  !row.text().contains("שישי") &&  !row.text().contains("שבת") &&  !cell.text().contains("תיאור"))
+                    tmpString.append(",").append(cell.text());
                 }
                 cleanCells.append("\n").append(tmpString);
             }
-            return cleanCells.toString().replaceAll("(?m)^[ \t]*\r?\n", "");
+            return cleanCells.toString(); // old cleaner .replaceAll("(?m)^[ \t]*\r?\n", "");
         }catch (Exception e){
             cleanCells.append("error");
         }
