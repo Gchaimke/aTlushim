@@ -11,12 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 class HtmlParser {
-    String connectToSite(String user, String password, String site) throws IOException {
+    String connectToSite(String user, String password, String site){
         HashMap<String, String> formData = new HashMap<>();
         String loginFormUrl = "https://www.tlushim.co.il/login.php";
         formData.put("id_num", user);
         formData.put("password", password);
-        Map.Entry<String,String> entry =null;
+        Map.Entry<String,String> entry;
         Document homePage= null;
         try {
             Connection.Response response  = Jsoup.connect(loginFormUrl)
@@ -54,7 +54,6 @@ class HtmlParser {
             Elements rows = table.select("tr");
             rows = rows.not("tr[class=atnd_remark_hide]");
             cleanCells.append(table.getElementsByTag("caption").text()).append("\n");
-            Element row;
             for (int i = 1; i < rows.size(); i++) {
                 StringBuilder tmpString = new StringBuilder();
                 for (Element cell : rows.get(i).getAllElements()) {
@@ -67,7 +66,6 @@ class HtmlParser {
         }catch (Exception e){
             cleanCells.append("error");
         }
-
         return cleanCells.toString();
     }
 }
