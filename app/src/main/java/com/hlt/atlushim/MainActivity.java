@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
             String[][] rows = to2dim(result, "\n", ",");
 
-            DecimalFormat df2 = new DecimalFormat("#.##");
             double mHours = 0;
             double lHours = 0;
         if(!rows[0][0].equals("error")) {
@@ -109,9 +108,9 @@ public class MainActivity extends AppCompatActivity {
                         if(!rows[i][3].equals("08:00") && !rows[i][4].equals("16:24")) {
                             double totalDouble = Time.dFromS(rows[i][5]);
                             if (totalDouble < 8.40)
-                                lHours += 8.40 - totalDouble;
+                                lHours += 8.90 - totalDouble;
                             if (totalDouble > 8.40)
-                                mHours += totalDouble-8.40;
+                                mHours += totalDouble-8.90;
                         }
                     }
 
@@ -123,16 +122,20 @@ public class MainActivity extends AppCompatActivity {
             TextView moreHours = findViewById(R.id.overHours);
             TextView lessHours = findViewById(R.id.lessHours);
             TextView whatYouNeed = findViewById(R.id.whatYouNeed);
-            moreHours.setText(getString(R.string.overHours) + "\n" + df2.format(mHours));
+
             moreHours.setTextColor(Color.parseColor("#008577"));
-            lessHours.setText(getString(R.string.lessHours) + "\n" + df2.format(lHours));
             lessHours.setTextColor(Color.parseColor("#DF9797"));
+
+            moreHours.setText(getString(R.string.overHours) + "\n" + Time.sFromD(mHours));
+            lessHours.setText(getString(R.string.lessHours) + "\n" + Time.sFromD(lHours));
+
+
             double sum = mHours - lHours;
             if (sum < 0) {
-                whatYouNeed.setText(getString(R.string.youLess) + " " + df2.format(sum) + " שעות ");
+                whatYouNeed.setText(getString(R.string.youLess) + " " + Time.sFromD(sum) + " שעות ");
                 whatYouNeed.setTextColor(Color.parseColor("#DF9797"));
             } else {
-                whatYouNeed.setText(getString(R.string.youMore) + " " + df2.format(sum) + " שעות ");
+                whatYouNeed.setText(getString(R.string.youMore) + " " + Time.sFromD(sum) + " שעות ");
                 whatYouNeed.setTextColor(Color.parseColor("#008577"));
             }
         }else {
