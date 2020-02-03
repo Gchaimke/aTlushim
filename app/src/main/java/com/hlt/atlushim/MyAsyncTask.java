@@ -3,14 +3,12 @@ package com.hlt.atlushim;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
-import java.io.IOException;
-
 class MyAsyncTask extends AsyncTask<String, Void, String> {
 
     @SuppressLint("StaticFieldLeak")
-    private MainActivity mClass;
+    private LoginActivity mClass;
 
-    MyAsyncTask(MainActivity mClass) {
+    MyAsyncTask(LoginActivity mClass) {
         this.mClass = mClass;
     }
 

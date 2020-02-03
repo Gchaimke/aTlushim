@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -19,13 +20,24 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
 
-    final String PASSWORD = "password";
-    final String USERNAME = "username";
-    ProgressBar pBar;
-    MyAsyncTask mAsync;
-    SharedPreferences sPref;
-    EditText etUser;
-    EditText etPass;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Intent intent = getIntent();
+        getResult(intent.getStringExtra("result"));
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+
 
     public static String [][] to2dim (String source, String outerdelim, String innerdelim) {
         // outerdelim may be a group of characters
@@ -42,34 +54,7 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
-        etUser = findViewById(R.id.etUser);
-        etPass = findViewById(R.id.etPass);
-        loadData();
-    }
-
-    public void loginButtonClick(View view) {
-        if (!DetectConnection.checkInternetConnection(this)) {
-            saveData();
-            Snackbar.make(view, "אין אינטרנט", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-        }else {
-            Snackbar.make(view, "טוען נתונים מאתר", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            pBar = findViewById(R.id.progressBar);
-            pBar.setVisibility(View.VISIBLE);
-            saveData();
-            mAsync = new MyAsyncTask(this);
-            String site = "https://www.tlushim.co.il/main.php?op=start"; //;
-            //String site = "https://www.tlushim.co.il/main.php?op=atnd&month=2020_01";
-            mAsync.execute(etUser.getText().toString(), etPass.getText().toString(),site);
-        }
-    }
-
-    void asyncResult(String result) {
+    void getResult(String result) {
         String sDate, sMore, sLess, sTotal;
         int[] colors = new int[2];
         colors[0] = Color.parseColor("#FFCEF7FF");
@@ -185,10 +170,7 @@ public class MainActivity extends AppCompatActivity {
                             finish();
                             break;
                         case DialogInterface.BUTTON_NEGATIVE:
-                            setContentView(R.layout.login);
-                            etUser = findViewById(R.id.etUser);
-                            etPass = findViewById(R.id.etPass);
-                            loadData();
+                            finish();
                             break;
                     }
                     // commonVariable.setSteps(0);
@@ -202,23 +184,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void saveData() {
-        sPref = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor ed = sPref.edit();
-        ed.putString(PASSWORD, etPass.getText().toString());
-        ed.putString(USERNAME, etUser.getText().toString());
-        ed.apply();
-        //Toast.makeText(this, "User data saved", Toast.LENGTH_SHORT).show();
-    }
 
-    void loadData() {
-        sPref = getPreferences(MODE_PRIVATE);
-        String savedText = sPref.getString(PASSWORD, "");
-        etPass.setText(savedText);
-        savedText = sPref.getString(USERNAME, "");
-        etUser.setText(savedText);
-        //Toast.makeText(this, "User data loaded", Toast.LENGTH_SHORT).show();
-    }
 
 }
 
