@@ -7,34 +7,6 @@
     android:layout_height="fill_parent"
     android:layoutDirection="rtl">
 
-    <TextView
-        android:id="@+id/header"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="#BEFFFFFF"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:textAlignment="center"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/login_header" />
-
-    <TextView
-        android:id="@+id/header2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="#BEFFFFFF"
-        android:textAlignment="center"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header"
-        tools:text="@string/login_header" />
-
     <LinearLayout
         android:id="@+id/linearLayout6"
         android:layout_width="0dp"
@@ -46,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header2">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="0dp"
@@ -94,8 +66,8 @@
         <LinearLayout
             android:id="@+id/linLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"></LinearLayout>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
     </ScrollView>
 
     <LinearLayout
@@ -117,6 +89,7 @@
             android:layout_weight="1"
             android:gravity="center_horizontal|center_vertical"
             android:paddingRight="16dp"
+            android:paddingLeft="16dp"
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textSize="16sp"

@@ -2,6 +2,7 @@ package com.hlt.atlushim;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,6 +22,8 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences sPref;
     EditText etUser;
     EditText etPass;
+    String site = "https://www.tlushim.co.il/main.php?op=start";
+    //String site = "https://www.tlushim.co.il/main.php?op=atnd&month=2020_01";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +45,13 @@ public class LoginActivity extends AppCompatActivity {
             pBar = findViewById(R.id.progressBar);
             pBar.setVisibility(View.VISIBLE);
             saveData();
-            mAsync = new MyAsyncTask(this);
-            String site = "https://www.tlushim.co.il/main.php?op=start"; //;
-            //String site = "https://www.tlushim.co.il/main.php?op=atnd&month=2020_01";
-            mAsync.execute(etUser.getText().toString(), etPass.getText().toString(),site);
+            startAsync(etUser.getText().toString(), etPass.getText().toString(),site);
         }
+    }
+
+    void startAsync(String user,String pass,String mySite){
+        mAsync = new MyAsyncTask(this);
+        mAsync.execute(user,pass,mySite);
     }
 
     void asyncResult(String result) {
@@ -54,9 +59,9 @@ public class LoginActivity extends AppCompatActivity {
         if(result.equals("error")){
             Toast.makeText(this, "שם משתמש או סיסמה לא נכונים", Toast.LENGTH_LONG).show();
         }else {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("result", result);
-            startActivity(intent);
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("result", result);
+                startActivity(intent);
         }
     }
 

@@ -2,21 +2,24 @@ package com.hlt.atlushim;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.snackbar.Snackbar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,9 +29,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         Intent intent = getIntent();
         getResult(intent.getStringExtra("result"));
-
     }
 
     @Override
@@ -37,7 +40,34 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getTitle().toString()){
+            case "תאריך":
+                Calendar date = Calendar.getInstance();
+                DateFormat dateFormat = new SimpleDateFormat("YYYY_MM", Locale.getDefault());
+                date.add(Calendar.MONTH,-1);
+                Toast.makeText(this, dateFormat.format(date.getTime()), Toast.LENGTH_SHORT).show();
+                break;
+            case "הגדרות":
+                Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+                break;
+            case "אודות":
+                Intent intent = new Intent(this,AboutActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            return;
+        }
+        String name = data.getStringExtra("name");
+        //tvName.setText("Your name is " + name);
+    }
 
     public static String [][] to2dim (String source, String outerdelim, String innerdelim) {
         // outerdelim may be a group of characters
@@ -69,8 +99,9 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout parent = findViewById(R.id.linLayout);
             LayoutInflater ltInflater = getLayoutInflater();
 
-            TextView header = findViewById(R.id.header);
-            header.setText((rows[0][0]).replace("מפורט", "מפורט \n"));
+            String[] strHeader=rows[0][0].split(" ");
+            Objects.requireNonNull(getSupportActionBar()).setTitle("דוח נוכחות של "+strHeader[1]+" "+strHeader[0]);
+            getSupportActionBar().setSubtitle("נחון לתאריך "+strHeader[7]);
 
             for (int i = 2; i < rows.length-3; i++) {
                 View item = ltInflater.inflate(R.layout.item, parent, false);
