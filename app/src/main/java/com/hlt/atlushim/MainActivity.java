@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
             String[] strHeader=rows[0][0].split(" ");
             Objects.requireNonNull(getSupportActionBar()).setTitle("דוח נוכחות של "+strHeader[1]+" "+strHeader[0]);
-            getSupportActionBar().setSubtitle("נחון לתאריך "+strHeader[7]);
+            getSupportActionBar().setSubtitle("נכון לתאריך "+strHeader[7]);
 
             for (int i = 2; i < rows.length-3; i++) {
                 View item = ltInflater.inflate(R.layout.item, parent, false);
