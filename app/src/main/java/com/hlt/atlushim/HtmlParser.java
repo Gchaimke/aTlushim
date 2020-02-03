@@ -54,7 +54,7 @@ class HtmlParser {
             Elements rows = table.select("tr");
             rows = rows.not("tr[class=atnd_remark_hide]");
             cleanCells.append(table.getElementsByTag("caption").text()).append("\n");
-            for (int i = 1; i < rows.size(); i++) {
+            for (int i = 0; i < rows.size(); i++) {
                 StringBuilder tmpString = new StringBuilder();
                 for (Element cell : rows.get(i).getAllElements()) {
                     //old cells cleaner : if (!cell.text().isEmpty() && !cell.text().equals(":") &&!cell.text().equals("\r") && !cell.text().equals("\r\n") && !cell.text().equals("\n") && !cell.text().equals(" ") && !cell.text().contains("רגיל") && !cell.text().contains("0.50") &&  !cell.text().contains("8.40") &&  !row.text().contains("שישי") &&  !row.text().contains("שבת") &&  !cell.text().contains("תיאור"))

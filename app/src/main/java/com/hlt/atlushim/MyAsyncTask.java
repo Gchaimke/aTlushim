@@ -27,7 +27,7 @@ class MyAsyncTask extends AsyncTask<String, Void, String> {
         try {
             str = htmlParser.connectToSite(loginData[0], loginData[1], loginData[2]);
 
-        }catch (IOException ex){
+        }catch (Exception ex){
             System.out.println(ex.getMessage());
         }
         return str;

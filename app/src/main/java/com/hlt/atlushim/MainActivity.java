@@ -11,14 +11,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
-
-import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        etUser = (EditText) findViewById(R.id.etUser);
-        etPass = (EditText) findViewById(R.id.etPass);
+        etUser = findViewById(R.id.etUser);
+        etPass = findViewById(R.id.etPass);
         loadData();
     }
 
@@ -66,21 +63,22 @@ public class MainActivity extends AppCompatActivity {
             pBar.setVisibility(View.VISIBLE);
             saveData();
             mAsync = new MyAsyncTask(this);
-            //String site = "https://www.tlushim.co.il/main.php?op=start"; //;
-            String site = "https://www.tlushim.co.il/main.php?op=atnd&month=2019_09";
+            String site = "https://www.tlushim.co.il/main.php?op=start"; //;
+            //String site = "https://www.tlushim.co.il/main.php?op=atnd&month=2020_01";
             mAsync.execute(etUser.getText().toString(), etPass.getText().toString(),site);
         }
     }
 
     void asyncResult(String result) {
-            int[] colors = new int[2];
-            colors[0] = Color.parseColor("#FFCEF7FF");
-            colors[1] = Color.parseColor("#FFDADCFF");
+        String sDate, sMore, sLess, sTotal;
+        int[] colors = new int[2];
+        colors[0] = Color.parseColor("#FFCEF7FF");
+        colors[1] = Color.parseColor("#FFDADCFF");
 
-            String[][] rows = to2dim(result, "\n", ",");
+        String[][] rows = to2dim(result, "\n", ",");
 
-            double mHours = 0;
-            double lHours = 0;
+        double mHours = 0;
+        double lHours = 0;
         if(!rows[0][0].equals("error")) {
             setContentView(R.layout.activity_main);
             LinearLayout parent = findViewById(R.id.linLayout);
@@ -89,38 +87,61 @@ public class MainActivity extends AppCompatActivity {
             TextView header = findViewById(R.id.header);
             header.setText((rows[0][0]).replace("מפורט", "מפורט \n"));
 
-            for (int i = 1; i < rows.length; i++) {
+            for (int i = 2; i < rows.length-3; i++) {
                 View item = ltInflater.inflate(R.layout.item, parent, false);
-                if (i < rows.length - 2) {
-                    TextView taarih = item.findViewById(R.id.taarih);
-                    taarih.setText(rows[i][1] + " " + rows[i][2]);
-                    if (rows[i][3].equals("08:00") && rows[i][4].equals("16:24")) {
-                        TextView in = item.findViewById(R.id.in);
-                        in.setText(rows[i][6]);
-                    } else {
-                        TextView in = item.findViewById(R.id.in);
-                        in.setText(rows[i][3]);
-                        TextView out = item.findViewById(R.id.out);
-                        if(!rows[i][3].equals("חג"))
-                            out.setText(rows[i][4]);
-                    }
-                    if (rows[i].length > 5) {
-                        TextView total = item.findViewById(R.id.total);
-                        total.setText(rows[i][5]);
-                        if(!rows[i][3].equals("08:00") && !rows[i][4].equals("16:24")) {
-                            double totalDouble = Time.dFromS(rows[i][5]);
+                TextView date = item.findViewById(R.id.taarih);
+                TextView in = item.findViewById(R.id.in);
+                TextView out = item.findViewById(R.id.out);
+                TextView total = item.findViewById(R.id.total);
+                if (rows[i].length>60){
+                    if (rows[i][7].equals("רגיל")) {
+                        sDate = rows[i][2] + "\n" + rows[i][3];
+                        date.setText(sDate);
+                        in.setText(rows[i][4]);
+                        out.setText(rows[i][5]);
+                        total.setText(rows[i][6]);
+                        if (!rows[2][1].contains("אי השלמת תקן")) {
+                            double totalDouble = Double.parseDouble(rows[i][rows[i].length - 4]);
                             if (totalDouble < 8.40)
-                                lHours += 8.90 - totalDouble;
-                            if (totalDouble > 8.40)
-                                mHours += totalDouble-8.90;
+                                lHours += 8.40 - totalDouble;
+                        }else{
+                            double totalDouble = Double.parseDouble(rows[i][rows[i].length - 5]);
+                            if (totalDouble < 8.40)
+                                lHours += 8.40 - totalDouble;
                         }
-                    }
+                        if (rows[2][29].contains("125") && !rows[i][64].isEmpty())
+                            mHours += Double.parseDouble(rows[i][64]);
+                        if (rows[2][30].contains("150") && !rows[i][65].isEmpty())
+                            mHours += Double.parseDouble(rows[i][65]);
 
-                    item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
-                    item.setBackgroundColor(colors[i % 2]);
-                    parent.addView(item);
+                        item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+                        item.setBackgroundColor(colors[i % 2]);
+                        parent.addView(item);
+                    } else if (rows[i][7].equals("חופשה")) {
+                        sDate = rows[i][2] + "\n" + rows[i][3];
+                        date.setText(sDate);
+                        in.setText(rows[i][7]);
+                        item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+                        item.setBackgroundColor(colors[i % 2]);
+                        parent.addView(item);
+                    } else if (rows[i][7].contains("מחלה")) {
+                        sDate = rows[i][2] + "\n" + rows[i][3];
+                        date.setText(sDate);
+                        in.setText(rows[i][7]);
+                        item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+                        item.setBackgroundColor(colors[i % 2]);
+                        parent.addView(item);
+                    } else if ( rows[i][1].contains("חג")) {
+                        sDate = rows[i][2] + "\n" + rows[i][3];
+                        date.setText(sDate);
+                        in.setText("חג");
+                        item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+                        item.setBackgroundColor(colors[i % 2]);
+                        parent.addView(item);
+                    }
                 }
             }
+
             TextView moreHours = findViewById(R.id.overHours);
             TextView lessHours = findViewById(R.id.lessHours);
             TextView whatYouNeed = findViewById(R.id.whatYouNeed);
@@ -128,26 +149,23 @@ public class MainActivity extends AppCompatActivity {
             moreHours.setTextColor(Color.parseColor("#008577"));
             lessHours.setTextColor(Color.parseColor("#DF9797"));
 
-            moreHours.setText(getString(R.string.overHours) + "\n" + Time.sFromD(mHours));
-            lessHours.setText(getString(R.string.lessHours) + "\n" + Time.sFromD(lHours));
-
+            sMore = getString(R.string.overHours) + "\n" + Time.sFromD(mHours);
+            sLess = getString(R.string.lessHours) + "\n" + Time.sFromD(lHours);
+            moreHours.setText(sMore);
+            lessHours.setText(sLess);
 
             double sum = mHours - lHours;
             if (sum < 0) {
-                whatYouNeed.setText(getString(R.string.youLess) + " " + Time.sFromD(sum) + " שעות ");
+                sTotal = getString(R.string.youLess) + " " + Time.sFromD(sum) +" "+ getString(R.string.hours);
+                whatYouNeed.setText(sTotal);
                 whatYouNeed.setTextColor(Color.parseColor("#DF9797"));
             } else {
-                whatYouNeed.setText(getString(R.string.youMore) + " " + Time.sFromD(sum) + " שעות ");
+                sTotal = getString(R.string.youMore) + " " + Time.sFromD(sum) +" "+ getString(R.string.hours);
+                whatYouNeed.setText(sTotal);
                 whatYouNeed.setTextColor(Color.parseColor("#008577"));
             }
-        }else {
-            pBar = findViewById(R.id.progressBar);
-            pBar.setVisibility(View.INVISIBLE);
-            Toast.makeText(getApplicationContext(),"שם משתמש או סיסמה לא נכונים. או אתר לא זמין.",Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     @Override
     public void onBackPressed() {
@@ -168,12 +186,12 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case DialogInterface.BUTTON_NEGATIVE:
                             setContentView(R.layout.login);
-                            etUser = (EditText) findViewById(R.id.etUser);
-                            etPass = (EditText) findViewById(R.id.etPass);
+                            etUser = findViewById(R.id.etUser);
+                            etPass = findViewById(R.id.etPass);
                             loadData();
                             break;
                     }
-                   // commonVariable.setSteps(0);
+                    // commonVariable.setSteps(0);
                 }
             };
 
