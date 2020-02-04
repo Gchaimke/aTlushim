@@ -2,8 +2,10 @@ package com.hlt.atlushim;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +25,10 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    final String PASSWORD = "password";
+    final String USERNAME = "username";
+    String user;
+    String pass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         Intent intent = getIntent();
         getResult(intent.getStringExtra("result"));
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        user =  preferences.getString(USERNAME, "");
+        pass = preferences.getString(PASSWORD, "");
     }
 
     @Override
@@ -42,11 +51,16 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getTitle().toString()){
-            case "תאריך":
+            case "חודש לפני":
                 Calendar date = Calendar.getInstance();
                 DateFormat dateFormat = new SimpleDateFormat("YYYY_MM", Locale.getDefault());
                 date.add(Calendar.MONTH,-1);
                 Toast.makeText(this, dateFormat.format(date.getTime()), Toast.LENGTH_SHORT).show();
+                startAsync(user,pass,"https://www.tlushim.co.il/main.php?op=atnd&month="+dateFormat.format(date.getTime()));
+                break;
+            case "חודש הזה":
+                Toast.makeText(this, "חוזר להיום", Toast.LENGTH_SHORT).show();
+                startAsync(user,pass,"https://www.tlushim.co.il/main.php?op=start");
                 break;
             case "הגדרות":
                 Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
@@ -57,16 +71,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) {
-            return;
-        }
-        String name = data.getStringExtra("name");
-        //tvName.setText("Your name is " + name);
     }
 
     public static String [][] to2dim (String source, String outerdelim, String innerdelim) {
@@ -180,6 +184,22 @@ public class MainActivity extends AppCompatActivity {
                 whatYouNeed.setText(sTotal);
                 whatYouNeed.setTextColor(Color.parseColor("#008577"));
             }
+        }
+    }
+
+    GetPrevAsyncTask mAsync;
+
+    void startAsync(String user,String pass,String mySite){
+        mAsync = new GetPrevAsyncTask(this);
+        mAsync.execute(user,pass,mySite);
+    }
+
+    void asyncResult(String result) {
+        //pBar.setVisibility(View.INVISIBLE);
+        if(result.equals("error")){
+            Toast.makeText(this, "שם משתמש או סיסמה לא נכונים", Toast.LENGTH_LONG).show();
+        }else {
+            getResult(result);
         }
     }
 

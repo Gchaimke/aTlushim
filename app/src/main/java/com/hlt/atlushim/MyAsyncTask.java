@@ -6,16 +6,52 @@ import android.os.AsyncTask;
 class MyAsyncTask extends AsyncTask<String, Void, String> {
 
     @SuppressLint("StaticFieldLeak")
-    private LoginActivity mClass;
+    private LoginActivity lClass;
 
-    MyAsyncTask(LoginActivity mClass) {
+    MyAsyncTask(LoginActivity lClass) {
+        this.lClass = lClass;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        //showProgressDialog
+        System.out.println("Connecting to tlushim.co.il from login Activity");
+    }
+
+    @Override
+    protected String  doInBackground(String... loginData) {
+        String str="...";
+        HtmlParser htmlParser = new HtmlParser();
+        try {
+            str = htmlParser.connectToSite(loginData[0], loginData[1], loginData[2]);
+
+        }catch (Exception ex){
+            System.out.println(ex.getMessage());
+        }
+        return str;
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+        lClass.asyncResult(result);
+
+    }
+
+}
+
+class GetPrevAsyncTask extends AsyncTask<String, Void, String> {
+
+    @SuppressLint("StaticFieldLeak")
+    private MainActivity mClass;
+
+    GetPrevAsyncTask(MainActivity mClass) {
         this.mClass = mClass;
     }
 
     @Override
     protected void onPreExecute() {
         //showProgressDialog
-        System.out.println("Connecting to tlushim.co.il");
+        System.out.println("Connecting to tlushim.co.il from Main Activity");
     }
 
     @Override

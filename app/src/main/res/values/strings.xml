@@ -10,14 +10,15 @@
     <string name="lessHours">אי השלמת תקן</string>
     <string name="youLess">אתא בחוסר</string>
     <string name="youMore">אתא ביתר</string>
-    <string name="taarih">תאריך</string>
-    <string name="knisa">כניסה</string>
-    <string name="yeciya">יציא</string>
-    <string name="sah_hacol">סך הכול</string>
+    <string name="date">תאריך</string>
+    <string name="enter">כניסה</string>
+    <string name="exit">יציא</string>
+    <string name="total_hours">סך הכול</string>
     <string name="hours">שעות</string>
     <string name="about">אודות</string>
     <string name="tlushim_co_il">התוכנה מבוססת על פרסינג של אתר tlushim.co.il</string>
     <string name="coded_by_gchaimke_gmail_com">Coded by Gchaimke@gmail.com</string>
-    <string name="menu_date">תאריך</string>
+    <string name="menu_date">חודש לפני</string>
     <string name="settings">הגדרות</string>
+    <string name="today">חודש הזה</string>
 </resources>
