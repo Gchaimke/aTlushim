@@ -1,6 +1,5 @@
 package com.hlt.atlushim;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -14,7 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.DateFormat;
@@ -25,6 +23,7 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
+    GetPrevAsyncTask mAsync;
     final String PASSWORD = "password";
     final String USERNAME = "username";
     String user;
@@ -37,10 +36,6 @@ public class MainActivity extends AppCompatActivity {
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         Intent intent = getIntent();
         getResult(intent.getStringExtra("result"));
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        user =  preferences.getString(USERNAME, "");
-        pass = preferences.getString(PASSWORD, "");
     }
 
     @Override
@@ -52,18 +47,14 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getTitle().toString()){
             case "חודש לפני":
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                user =  preferences.getString(USERNAME, "");
+                pass = preferences.getString(PASSWORD, "");
                 Calendar date = Calendar.getInstance();
                 DateFormat dateFormat = new SimpleDateFormat("YYYY_MM", Locale.getDefault());
                 date.add(Calendar.MONTH,-1);
-                Toast.makeText(this, dateFormat.format(date.getTime()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "מחפש חודש קודם...", Toast.LENGTH_LONG).show();
                 startAsync(user,pass,"https://www.tlushim.co.il/main.php?op=atnd&month="+dateFormat.format(date.getTime()));
-                break;
-            case "חודש הזה":
-                Toast.makeText(this, "חוזר להיום", Toast.LENGTH_SHORT).show();
-                startAsync(user,pass,"https://www.tlushim.co.il/main.php?op=start");
-                break;
-            case "הגדרות":
-                Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
             case "אודות":
                 Intent intent = new Intent(this,AboutActivity.class);
@@ -187,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    GetPrevAsyncTask mAsync;
 
     void startAsync(String user,String pass,String mySite){
         mAsync = new GetPrevAsyncTask(this);
@@ -197,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
     void asyncResult(String result) {
         //pBar.setVisibility(View.INVISIBLE);
         if(result.equals("error")){
-            Toast.makeText(this, "שם משתמש או סיסמה לא נכונים", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "אין נתונים זמינים...", Toast.LENGTH_LONG).show();
         }else {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("result", result);
