@@ -199,43 +199,11 @@ public class MainActivity extends AppCompatActivity {
         if(result.equals("error")){
             Toast.makeText(this, "שם משתמש או סיסמה לא נכונים", Toast.LENGTH_LONG).show();
         }else {
-            getResult(result);
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("result", result);
+            startActivity(intent);
         }
     }
-
-    @Override
-    public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStack();
-        } else {
-            DialogInterface.OnClickListener dialogInterface = new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case DialogInterface.BUTTON_POSITIVE:
-                            Intent intent = new Intent(Intent.ACTION_MAIN);
-                            intent.addCategory(Intent.CATEGORY_HOME);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            finish();
-                            break;
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            finish();
-                            break;
-                    }
-                    // commonVariable.setSteps(0);
-                }
-            };
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setMessage("לצאת מהתוכנה?")
-                    .setPositiveButton("כן", dialogInterface)
-                    .setNegativeButton("לא", dialogInterface).show();
-        }
-    }
-
-
 
 }
 
