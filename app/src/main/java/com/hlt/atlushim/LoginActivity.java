@@ -18,12 +18,13 @@ public class LoginActivity extends AppCompatActivity {
 
     final String PASSWORD = "password";
     final String USERNAME = "username";
+    final String DATA = "data";
     ProgressBar pBar;
     MyAsyncTask lAsync;
     EditText etUser;
     EditText etPass;
     String site = "https://www.tlushim.co.il/main.php?op=start";
-    String data;
+    String strData;
     //String site = "https://www.tlushim.co.il/main.php?op=atnd&month=2020_01";
 
     @Override
@@ -34,9 +35,9 @@ public class LoginActivity extends AppCompatActivity {
         etPass = findViewById(R.id.etPass);
         getDefaults(this);
 
-        if(!data.isEmpty()) {
+        if(!strData.isEmpty()) {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("result", data);
+            intent.putExtra("result", strData);
             startActivity(intent);
         }
     }
@@ -90,6 +91,6 @@ public class LoginActivity extends AppCompatActivity {
         etPass.setText(savedText);
         savedText = preferences.getString(USERNAME, "");
         etUser.setText(savedText);
-        data = preferences.getString("data","");
+        strData = preferences.getString(DATA,"");
     }
 }

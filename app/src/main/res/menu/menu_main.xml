@@ -10,7 +10,7 @@
     <item
         android:id="@+id/prevMonth"
         android:icon="@android:drawable/ic_menu_today"
-        android:numericShortcut="1"
+        android:numericShortcut="2"
         android:title="@string/menu_date"
         app:showAsAction="ifRoom" />
     <item
