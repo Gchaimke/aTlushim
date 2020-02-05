@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     final String USERNAME = "username";
     String user;
     String pass;
+    boolean renew=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         Intent intent = getIntent();
         getResult(intent.getStringExtra("result"));
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        user = preferences.getString(USERNAME, "");
+        pass = preferences.getString(PASSWORD, "");
     }
 
     @Override
@@ -47,18 +51,28 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getTitle().toString()){
             case "חודש לפני":
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                user =  preferences.getString(USERNAME, "");
-                pass = preferences.getString(PASSWORD, "");
-                Calendar date = Calendar.getInstance();
-                DateFormat dateFormat = new SimpleDateFormat("YYYY_MM", Locale.getDefault());
-                date.add(Calendar.MONTH,-1);
-                Toast.makeText(this, "מחפש חודש קודם...", Toast.LENGTH_LONG).show();
-                startAsync(user,pass,"https://www.tlushim.co.il/main.php?op=atnd&month="+dateFormat.format(date.getTime()));
+                if (!DetectConnection.checkInternetConnection(this)) {
+                    Toast.makeText(this, "אין אינטרנט...", Toast.LENGTH_LONG).show();
+                }else {
+                    Calendar date = Calendar.getInstance();
+                    DateFormat dateFormat = new SimpleDateFormat("YYYY_MM", Locale.getDefault());
+                    date.add(Calendar.MONTH, -1);
+                    Toast.makeText(this, "מחפש חודש קודם...", Toast.LENGTH_LONG).show();
+                    startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=" + dateFormat.format(date.getTime()));
+                }
                 break;
             case "אודות":
                 Intent intent = new Intent(this,AboutActivity.class);
                 startActivity(intent);
+                break;
+            case "לחדש":
+                if (!DetectConnection.checkInternetConnection(this)) {
+                    Toast.makeText(this, "אין אינטרנט...", Toast.LENGTH_LONG).show();
+                }else {
+                    renew = true;
+                    Toast.makeText(this, "מעדכן נתונים...", Toast.LENGTH_LONG).show();
+                    startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=start");
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -89,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
         double mHours = 0;
         double lHours = 0;
-        if(!rows[0][0].equals("error")) {
+        if(!rows[0][0].equals("error") && !rows[0][0].isEmpty()) {
             setContentView(R.layout.activity_main);
             LinearLayout parent = findViewById(R.id.linLayout);
             LayoutInflater ltInflater = getLayoutInflater();
@@ -175,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
                 whatYouNeed.setText(sTotal);
                 whatYouNeed.setTextColor(Color.parseColor("#008577"));
             }
+
         }
     }
 
@@ -189,9 +204,19 @@ public class MainActivity extends AppCompatActivity {
         if(result.equals("error")){
             Toast.makeText(this, "אין נתונים זמינים...", Toast.LENGTH_LONG).show();
         }else {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("result", result);
-            startActivity(intent);
+            if(renew){
+                getResult(result);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("data", result);
+                editor.apply();
+                renew=false;
+                Toast.makeText(this, "נתונים מעודכנים בהצלחה!", Toast.LENGTH_LONG).show();
+            }else {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("result", result);
+                startActivity(intent);
+            }
         }
     }
 

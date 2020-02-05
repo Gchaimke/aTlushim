@@ -23,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText etUser;
     EditText etPass;
     String site = "https://www.tlushim.co.il/main.php?op=start";
+    String data;
     //String site = "https://www.tlushim.co.il/main.php?op=atnd&month=2020_01";
 
     @Override
@@ -32,6 +33,12 @@ public class LoginActivity extends AppCompatActivity {
         etUser = findViewById(R.id.etUser);
         etPass = findViewById(R.id.etPass);
         getDefaults(this);
+
+        if(!data.isEmpty()) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("result", data);
+            startActivity(intent);
+        }
     }
 
     public void loginButtonClick(View view) {
@@ -59,9 +66,13 @@ public class LoginActivity extends AppCompatActivity {
         if(result.equals("error")){
             Toast.makeText(this, "שם משתמש או סיסמה לא נכונים", Toast.LENGTH_LONG).show();
         }else {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("result", result);
-                startActivity(intent);
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("data", result);
+            editor.apply();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("result", result);
+            startActivity(intent);
         }
     }
 
@@ -79,5 +90,6 @@ public class LoginActivity extends AppCompatActivity {
         etPass.setText(savedText);
         savedText = preferences.getString(USERNAME, "");
         etUser.setText(savedText);
+        data = preferences.getString("data","");
     }
 }

@@ -21,4 +21,5 @@
     <string name="menu_date">חודש לפני</string>
     <string name="settings">הגדרות</string>
     <string name="today">חודש הזה</string>
+    <string name="renew">לחדש</string>
 </resources>
