@@ -7,7 +7,7 @@
     <string name="login_header">כניסה לאתר tlushim.co.il</string>
     <string name="login_image">Login Image</string>
     <string name="overHours">שעות נוספות</string>
-    <string name="lessHours">אי השלמת תקן</string>
+    <string name="lessHours">שעות חסרות</string>
     <string name="youLess">אתא בחוסר</string>
     <string name="youMore">אתא ביתר</string>
     <string name="date">תאריך</string>

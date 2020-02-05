@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                         in.setText(rows[i][4]);
                         out.setText(rows[i][5]);
                         total.setText(rows[i][6]);
-                        if (!rows[2][1].contains("שעות חסרות")) {
+                        if (!rows[2][1].contains("אי השלמת תקן")) {
                             double totalDouble = Double.parseDouble(rows[i][rows[i].length - 4]);
                             if (totalDouble < 8.40)
                                 lHours += 8.40 - totalDouble;
