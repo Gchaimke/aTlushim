@@ -118,7 +118,7 @@
         android:gravity="center_horizontal|center_vertical"
         android:paddingBottom="10dp"
         android:text="@string/youMore"
-        android:textSize="20sp"
+        android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
