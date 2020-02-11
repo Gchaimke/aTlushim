@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     Calendar date;
     String user;
     String pass;
+    String parentActivity="";
     boolean renew=false;
 
     @Override
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         Intent intent = getIntent();
         getResult(intent.getStringExtra("result"));
+        parentActivity = intent.getStringExtra("parentActivity");
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         date = Calendar.getInstance();
         user = preferences.getString(USERNAME, "");
@@ -53,7 +55,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        Intent intent = getIntent();
+        parentActivity = intent.getStringExtra("parentActivity");
+        assert parentActivity != null;
+        if(parentActivity.equals("main")){
+            getMenuInflater().inflate(R.menu.prev_month_menu, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.menu_main, menu);
+        }
         return true;
     }
 
@@ -71,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     }else {
                         Intent intent = new Intent(this, MainActivity.class);
                         intent.putExtra("result", preferences.getString(PREVMONTH,""));
+                        intent.putExtra("parentActivity", "main");
                         startActivity(intent);
                     }
                 }
@@ -94,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
                         startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=start");
                     }
                 }
+                break;
+            case "חזרה":
+                finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -213,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
             double sum = mHours - lHours;
             if (sum < 0) {
-                sTotal = getString(R.string.youLess) + " " + Time.sFromD(sum) +" "+ getString(R.string.hours);
+                sTotal = getString(R.string.youLess) + " " + Time.sFromD(Math.abs(sum)) +" "+ getString(R.string.hours);
                 whatYouNeed.setText(sTotal);
                 whatYouNeed.setTextColor(Color.parseColor("#DF9797"));
             } else {
@@ -250,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.apply();
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("result", result);
+                intent.putExtra("parentActivity", "main");
                 startActivity(intent);
             }
         }

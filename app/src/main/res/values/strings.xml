@@ -28,4 +28,5 @@
     <string name="get_update">מעדכן נתונים…</string>
     <string name="prev_month">מחפש חודש קודם…</string>
     <string name="no_new">אין נתונים חדשים.</string>
+    <string name="back">חזרה</string>
 </resources>

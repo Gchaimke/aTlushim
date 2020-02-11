@@ -38,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         if(!strData.isEmpty()) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("result", strData);
+            intent.putExtra("parentActivity", "login");
             startActivity(intent);
         }
     }
@@ -73,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
             editor.apply();
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("result", result);
+            intent.putExtra("parentActivity", "login");
             startActivity(intent);
         }
     }
