@@ -22,4 +22,10 @@
     <string name="settings">הגדרות</string>
     <string name="today">חודש הזה</string>
     <string name="renew">לחדש</string>
+    <string name="update_ok">הנתונים עודכנו בהצלחה!</string>
+    <string name="update_error">אין נתונים זמינים…</string>
+    <string name="no_internet">אין אינטרנט…</string>
+    <string name="get_update">מעדכן נתונים…</string>
+    <string name="prev_month">מחפש חודש קודם…</string>
+    <string name="no_new">אין נתונים חדשים.</string>
 </resources>

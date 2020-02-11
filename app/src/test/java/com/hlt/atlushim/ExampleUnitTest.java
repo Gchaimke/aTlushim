@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
 
     @Before
-    public void setUp() throws Exception{
+    public void setUp() {
 
     }
 
@@ -25,6 +25,6 @@ public class ExampleUnitTest {
         assertEquals("0:00", Time.sFromD(0.0));
         assertEquals("4:04", Time.addTime("1:55","2:09"));
         assertEquals("3:09", Time.addTime("1:35","1:35"));
-        assertEquals("0:54", Time.subTime("8:24","7:30"));
+        assertEquals("-1:30", Time.subTime("0:00","1:30"));
     }
 }

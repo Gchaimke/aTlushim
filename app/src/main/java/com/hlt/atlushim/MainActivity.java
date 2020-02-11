@@ -3,6 +3,7 @@ package com.hlt.atlushim;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -26,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
     GetPrevAsyncTask mAsync;
     final String PASSWORD = "password";
     final String USERNAME = "username";
+    final String LASTCHECK = "lastcheck";
+    final String PREVMONTH = "prevMonth";
+
+    SharedPreferences preferences;
+    Calendar date;
     String user;
     String pass;
     boolean renew=false;
@@ -37,9 +43,12 @@ public class MainActivity extends AppCompatActivity {
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         Intent intent = getIntent();
         getResult(intent.getStringExtra("result"));
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        date = Calendar.getInstance();
         user = preferences.getString(USERNAME, "");
         pass = preferences.getString(PASSWORD, "");
+
+
     }
 
     @Override
@@ -52,13 +61,18 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getTitle().toString()){
             case "חודש לפני":
                 if (!DetectConnection.checkInternetConnection(this)) {
-                    Toast.makeText(this, "אין אינטרנט...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_LONG).show();
                 }else {
-                    Calendar date = Calendar.getInstance();
                     DateFormat dateFormat = new SimpleDateFormat("YYYY_MM", Locale.getDefault());
                     date.add(Calendar.MONTH, -1);
-                    Toast.makeText(this, "מחפש חודש קודם...", Toast.LENGTH_LONG).show();
-                    startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=" + dateFormat.format(date.getTime()));
+                    if(preferences.getString(PREVMONTH,"").isEmpty()){
+                        Toast.makeText(this, getString(R.string.prev_month), Toast.LENGTH_LONG).show();
+                        startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=" + dateFormat.format(date.getTime()));
+                    }else {
+                        Intent intent = new Intent(this, MainActivity.class);
+                        intent.putExtra("result", preferences.getString(PREVMONTH,""));
+                        startActivity(intent);
+                    }
                 }
                 break;
             case "אודות":
@@ -67,11 +81,18 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "לחדש":
                 if (!DetectConnection.checkInternetConnection(this)) {
-                    Toast.makeText(this, "אין אינטרנט...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_LONG).show();
                 }else {
-                    renew = true;
-                    Toast.makeText(this, "מעדכן נתונים...", Toast.LENGTH_LONG).show();
-                    startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=start");
+                    DateFormat dateFormat = new SimpleDateFormat("HH", Locale.getDefault());
+                    int currentHour = Integer.parseInt(dateFormat.format(date.getTime()));
+                    int savedHour = preferences.getInt(LASTCHECK, 0);
+                    if(currentHour == savedHour){
+                        Toast.makeText(this, getString(R.string.no_new), Toast.LENGTH_LONG).show();
+                    }else {
+                        renew = true;
+                        Toast.makeText(this, getString(R.string.get_update), Toast.LENGTH_LONG).show();
+                        startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=start");
+                    }
                 }
                 break;
         }
@@ -163,6 +184,17 @@ public class MainActivity extends AppCompatActivity {
                         item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
                         item.setBackgroundColor(colors[i % 2]);
                         parent.addView(item);
+                    }else if ( rows[i][1].contains("העדרות")) {
+                        sDate = rows[i][2] + "\n" + rows[i][3];
+                        date.setText(sDate);
+                        in.setText("העדרות");
+                        item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            item.setBackgroundColor(getColor(R.color.colorAccent1));
+                        }else {
+                            item.setBackgroundColor(colors[i % 2]);
+                        }
+                        parent.addView(item);
                     }
                 }
             }
@@ -200,19 +232,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void asyncResult(String result) {
-        //pBar.setVisibility(View.INVISIBLE);
+        SharedPreferences.Editor editor = preferences.edit();
         if(result.equals("error")){
-            Toast.makeText(this, "אין נתונים זמינים...", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.update_error), Toast.LENGTH_LONG).show();
         }else {
             if(renew){
+                DateFormat dateFormat = new SimpleDateFormat("HH", Locale.getDefault());
+                int currentHour = Integer.parseInt(dateFormat.format(date.getTime()));
                 getResult(result);
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("data", result);
+                editor.putInt(LASTCHECK,currentHour );
                 editor.apply();
+                Toast.makeText(this,getString(R.string.update_ok) , Toast.LENGTH_LONG).show();
                 renew=false;
-                Toast.makeText(this, "נתונים מעודכנים בהצלחה!", Toast.LENGTH_LONG).show();
             }else {
+                editor.putString(PREVMONTH,result);
+                editor.apply();
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("result", result);
                 startActivity(intent);

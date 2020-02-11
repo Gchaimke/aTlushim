@@ -2,14 +2,12 @@ package com.hlt.atlushim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 
-public class Time {
-
+class Time {
 
 
-    public static double dFromS(String str){
-        DecimalFormat df = new DecimalFormat("0.00");
+
+    static double dFromS(String str){
         String [] strToD=str.split(":");
         try {
             double hour = Double.parseDouble(strToD[0]);
@@ -17,33 +15,29 @@ public class Time {
             minute = ((100.0 / 60) * minute) / 100;
             BigDecimal bd = new BigDecimal(minute).setScale(2, RoundingMode.HALF_UP);
             return hour+bd.doubleValue();
-        }catch (Exception e){
+        }catch (Exception ignored){
 
         }
         return 0;
     }
 
-    public static String sFromD(Double time){
-        int h = (int) Math.floor(time);
+    static String sFromD(Double time){
+        int h =time.intValue();
         int m = (int) (time * 100 % 100);
-        int minute = (int)(0.6*m);
+        int minute = Math.abs((int)(0.6*m));
         if(minute<10){
             return h+":0" + minute;
         }
         return h+":" + minute;
     }
 
-    public static String addTime(String time1, String time2){
-        String total="";
+    static String addTime(String time1, String time2){
         Double summ = dFromS(time1)+dFromS(time2);
-        total = sFromD(summ);
-        return total;
+        return sFromD(summ);
     }
 
-    public static String subTime(String time1, String time2){
-        String total="";
+    static String subTime(String time1, String time2){
         Double summ = dFromS(time1)-dFromS(time2);
-        total = sFromD(summ);
-        return total;
+        return sFromD(summ);
     }
 }
