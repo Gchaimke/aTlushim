@@ -8,8 +8,8 @@
     <string name="login_image">Login Image</string>
     <string name="overHours">שעות נוספות</string>
     <string name="lessHours">שעות חסרות</string>
-    <string name="youLess">אתא בחוסר</string>
-    <string name="youMore">אתא ביתר</string>
+    <string name="youLess">חסר</string>
+    <string name="youMore">יתר</string>
     <string name="date">תאריך</string>
     <string name="enter">כניסה</string>
     <string name="exit">יציא</string>
