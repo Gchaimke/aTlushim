@@ -1,5 +1,6 @@
 package com.hlt.atlushim;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.DateFormat;
@@ -49,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
         date = Calendar.getInstance();
         user = preferences.getString(USERNAME, "");
         pass = preferences.getString(PASSWORD, "");
-
-
     }
 
     @Override
@@ -269,5 +269,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        AlertDialog.Builder builder =new AlertDialog.Builder(this);
+        builder.setTitle("לצאת מהתוכנה?");
+        builder.setCancelable(false).setPositiveButton("כן", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        Intent intent = getIntent();
+        parentActivity = intent.getStringExtra("parentActivity");
+        assert parentActivity != null;
+        if(parentActivity.equals("login")){
+            AlertDialog alert = builder.create();
+            alert.show();
+        }else {
+            finish();
+        }
+    }
 }
 

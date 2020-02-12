@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login);
         etUser = findViewById(R.id.etUser);
         etPass = findViewById(R.id.etPass);
-        getDefaults(this);
+        getDefaults(this); //get saved data from shared preference
 
         if(!strData.isEmpty()) {
             Intent intent = new Intent(this, MainActivity.class);
