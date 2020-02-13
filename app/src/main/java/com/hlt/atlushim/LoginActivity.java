@@ -82,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
     void setDefaults(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
         editor.putString(PASSWORD, etPass.getText().toString());
         editor.putString(USERNAME, etUser.getText().toString());
         editor.apply();

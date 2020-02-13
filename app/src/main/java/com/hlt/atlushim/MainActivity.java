@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -29,15 +28,14 @@ public class MainActivity extends AppCompatActivity {
     GetPrevAsyncTask mAsync;
     final String PASSWORD = "password";
     final String USERNAME = "username";
-    final String LASTCHECK = "lastcheck";
     final String PREVMONTH = "prevMonth";
 
     SharedPreferences preferences;
-    Calendar date;
     String user;
     String pass;
     String parentActivity="";
     boolean renew=false;
+    Calendar date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
         getResult(intent.getStringExtra("result"));
         parentActivity = intent.getStringExtra("parentActivity");
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        date = Calendar.getInstance();
         user = preferences.getString(USERNAME, "");
         pass = preferences.getString(PASSWORD, "");
+        date = Calendar.getInstance();
     }
 
     @Override
@@ -74,15 +72,8 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     DateFormat dateFormat = new SimpleDateFormat("YYYY_MM", Locale.getDefault());
                     date.add(Calendar.MONTH, -1);
-                    if(preferences.getString(PREVMONTH,"").isEmpty()){
-                        Toast.makeText(this, getString(R.string.prev_month), Toast.LENGTH_LONG).show();
-                        startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=" + dateFormat.format(date.getTime()));
-                    }else {
-                        Intent intent = new Intent(this, MainActivity.class);
-                        intent.putExtra("result", preferences.getString(PREVMONTH,""));
-                        intent.putExtra("parentActivity", "main");
-                        startActivity(intent);
-                    }
+                    Toast.makeText(this, getString(R.string.prev_month), Toast.LENGTH_LONG).show();
+                    startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=" + dateFormat.format(date.getTime()));
                 }
                 break;
             case "אודות":
@@ -90,19 +81,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case "לחדש":
+                date = Calendar.getInstance();
                 if (!DetectConnection.checkInternetConnection(this)) {
                     Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_LONG).show();
                 }else {
-                    DateFormat dateFormat = new SimpleDateFormat("HH", Locale.getDefault());
-                    int currentHour = Integer.parseInt(dateFormat.format(date.getTime()));
-                    int savedHour = preferences.getInt(LASTCHECK, 0);
-                    if(currentHour == savedHour){
-                        Toast.makeText(this, getString(R.string.no_new), Toast.LENGTH_LONG).show();
-                    }else {
-                        renew = true;
-                        Toast.makeText(this, getString(R.string.get_update), Toast.LENGTH_LONG).show();
-                        startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=start");
-                    }
+                    renew = true;
+                    Toast.makeText(this, getString(R.string.get_update), Toast.LENGTH_LONG).show();
+                    startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=start");
+                    //startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=2019_10");
                 }
                 break;
             case "חזרה":
@@ -132,18 +118,17 @@ public class MainActivity extends AppCompatActivity {
         int[] colors = new int[2];
         colors[0] = Color.parseColor("#FFCEF7FF");
         colors[1] = Color.parseColor("#FFDADCFF");
-
         String[][] rows = to2dim(result, "\n", ",");
-
         double mHours = 0;
         double lHours = 0;
+        double tkn , totalDouble ;
         if(!rows[0][0].equals("error") && !rows[0][0].isEmpty()) {
             setContentView(R.layout.activity_main);
             LinearLayout parent = findViewById(R.id.linLayout);
             LayoutInflater ltInflater = getLayoutInflater();
 
             String[] strHeader=rows[0][0].split(" ");
-            Objects.requireNonNull(getSupportActionBar()).setTitle("דוח נוכחות של "+strHeader[1]+" "+strHeader[0]);
+            Objects.requireNonNull(getSupportActionBar()).setTitle("נוכחות "+strHeader[1]+" "+strHeader[0]);
             getSupportActionBar().setSubtitle("נכון לתאריך "+strHeader[7]);
 
             for (int i = 2; i < rows.length-3; i++) {
@@ -153,62 +138,77 @@ public class MainActivity extends AppCompatActivity {
                 TextView out = item.findViewById(R.id.out);
                 TextView total = item.findViewById(R.id.total);
                 if (rows[i].length>60){
-                    if (rows[i][7].equals("רגיל")) {
+                    if (rows[i][rows[i].length - 3].equals("רגיל") || rows[i][rows[i].length - 3].contains("חוה")) {
                         sDate = rows[i][2] + "\n" + rows[i][3];
                         date.setText(sDate);
                         in.setText(rows[i][4]);
                         out.setText(rows[i][5]);
                         total.setText(rows[i][6]);
-                        if (!rows[2][1].contains("אי השלמת תקן")) {
-                            double totalDouble = Double.parseDouble(rows[i][rows[i].length - 4]);
-                            if (totalDouble < 8.40)
-                                lHours += 8.40 - totalDouble;
-                        }else{
-                            double totalDouble = Double.parseDouble(rows[i][rows[i].length - 5]);
-                            if (totalDouble < 8.40)
-                                lHours += 8.40 - totalDouble;
+                        tkn = Double.parseDouble(rows[i][rows[i].length - 2]);
+                        if (rows[i][rows[i].length - 3].equals("חוה\"מ 1"))
+                            tkn=8.5;
+
+                        if (!rows[i][rows[i].length - 4].isEmpty() && !rows[2][1].contains("אי השלמת תקן")) {
+                            totalDouble = Double.parseDouble(rows[i][rows[i].length - 4]);
+                            if (totalDouble < tkn)
+                                lHours += tkn - totalDouble;
+                            if(totalDouble > tkn)
+                                mHours+= totalDouble-tkn;
+                        }else if(!rows[i][rows[i].length - 5].isEmpty()){
+                            totalDouble = Double.parseDouble(rows[i][rows[i].length - 5]);
+                            if (totalDouble < tkn)
+                                lHours += tkn - totalDouble;
+                            if(totalDouble > tkn)
+                                mHours+= totalDouble-tkn;
                         }
-                        if (rows[2][29].contains("125") && !rows[i][64].isEmpty())
-                            mHours += Double.parseDouble(rows[i][64]);
-                        if (rows[2][30].contains("150") && !rows[i][65].isEmpty())
-                            mHours += Double.parseDouble(rows[i][65]);
 
                         item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
                         item.setBackgroundColor(colors[i % 2]);
                         parent.addView(item);
-                    } else if (rows[i][7].equals("חופשה")) {
+                    }else if (rows[i][7].equals("חופשה") ||
+                            rows[i][7].contains("מילואים") ||
+                            rows[i][7].contains("חול בתפקיד") ||
+                            rows[i][7].contains("אבל") ||
+                            rows[i][7].contains("מצב בטחוני")) {
                         sDate = rows[i][2] + "\n" + rows[i][3];
                         date.setText(sDate);
                         in.setText(rows[i][7]);
                         item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
                         item.setBackgroundColor(colors[i % 2]);
                         parent.addView(item);
-                    } else if (rows[i][7].contains("מחלה")) {
+                    }else if(rows[i][rows[i].length - 3].contains("העדרות")||
+                            rows[i][rows[i].length - 3].contains("חג")){
                         sDate = rows[i][2] + "\n" + rows[i][3];
                         date.setText(sDate);
-                        in.setText(rows[i][7]);
-                        item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+                        in.setText(rows[i][rows[i].length - 3]);
                         item.setBackgroundColor(colors[i % 2]);
                         parent.addView(item);
-                    } else if ( rows[i][1].contains("חג")) {
+                    }else if(rows[i][rows[i].length - 3].contains("שישי")){
                         sDate = rows[i][2] + "\n" + rows[i][3];
                         date.setText(sDate);
-                        in.setText("חג");
-                        item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
-                        item.setBackgroundColor(colors[i % 2]);
-                        parent.addView(item);
-                    }else if ( rows[i][1].contains("העדרות")) {
-                        sDate = rows[i][2] + "\n" + rows[i][3];
-                        date.setText(sDate);
-                        in.setText("העדרות");
-                        item.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            item.setBackgroundColor(getColor(R.color.colorAccent1));
-                        }else {
-                            item.setBackgroundColor(colors[i % 2]);
+                        in.setText(rows[i][4]);
+                        out.setText(rows[i][5]);
+                        total.setText(rows[i][6]);
+                        if (!rows[i][rows[i].length - 4].isEmpty() && !rows[2][1].contains("אי השלמת תקן")) {
+                            totalDouble = Double.parseDouble(rows[i][rows[i].length - 4]);
+                            mHours+= totalDouble;
+                        }else if(!rows[i][rows[i].length - 5].isEmpty()){
+                            totalDouble = Double.parseDouble(rows[i][rows[i].length - 5]);
+                            mHours+= totalDouble;
                         }
+                        item.setBackgroundColor(colors[i % 2]);
                         parent.addView(item);
                     }
+
+                    if(rows[i][7].contains("מחלה")){
+                        sDate = rows[i][2] + "\n" + rows[i][3];
+                        date.setText(sDate);
+                        total.setText("");
+                        in.setText("");
+                        out.setText(rows[i][7]);
+                    }
+
+
                 }
             }
 
@@ -250,11 +250,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, getString(R.string.update_error), Toast.LENGTH_LONG).show();
         }else {
             if(renew){
-                DateFormat dateFormat = new SimpleDateFormat("HH", Locale.getDefault());
-                int currentHour = Integer.parseInt(dateFormat.format(date.getTime()));
                 getResult(result);
                 editor.putString("data", result);
-                editor.putInt(LASTCHECK,currentHour );
                 editor.apply();
                 Toast.makeText(this,getString(R.string.update_ok) , Toast.LENGTH_LONG).show();
                 renew=false;

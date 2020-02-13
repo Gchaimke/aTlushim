@@ -6,8 +6,8 @@ android {
         applicationId "com.hlt.atlushim"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 105
-        versionName '1.5'
+        versionCode 106
+        versionName '1.6'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.debug
     }
@@ -27,5 +27,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation 'org.jsoup:jsoup:1.12.1'
+    implementation 'org.jsoup:jsoup:1.12.2'
 }
