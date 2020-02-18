@@ -1,5 +1,7 @@
 package com.hlt.atlushim;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     final String PREVMONTH = "prevMonth";
 
     SharedPreferences preferences;
+    ProgressDialog pd;
     String user;
     String pass;
     String parentActivity="";
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         Intent intent = getIntent();
-        getResult(intent.getStringExtra("result"));
+        updateViewWithResult(intent.getStringExtra("result"));
         parentActivity = intent.getStringExtra("parentActivity");
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         user = preferences.getString(USERNAME, "");
@@ -64,6 +67,12 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    void connectionDialog(Context context,String message){
+        pd = new ProgressDialog(context);
+        pd.setMessage(message);
+        pd.show();
+    }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getTitle().toString()){
             case "חודש לפני":
@@ -72,8 +81,9 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     DateFormat dateFormat = new SimpleDateFormat("YYYY_MM", Locale.getDefault());
                     date.add(Calendar.MONTH, -1);
-                    Toast.makeText(this, getString(R.string.prev_month), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(this, getString(R.string.prev_month), Toast.LENGTH_LONG).show();
                     startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=" + dateFormat.format(date.getTime()));
+                    connectionDialog(this,getString(R.string.prev_month)+" "+dateFormat.format(date.getTime()));
                 }
                 break;
             case "אודות":
@@ -81,12 +91,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case "לחדש":
+                connectionDialog(this,getString(R.string.get_update));
                 date = Calendar.getInstance();
                 if (!DetectConnection.checkInternetConnection(this)) {
                     Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_LONG).show();
                 }else {
                     renew = true;
-                    Toast.makeText(this, getString(R.string.get_update), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(this, getString(R.string.get_update), Toast.LENGTH_LONG).show();
                     startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=start");
                     //startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=2019_10");
                 }
@@ -96,6 +107,34 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    void startAsync(String user,String pass,String mySite){
+        mAsync = new GetPrevAsyncTask(this);
+        mAsync.execute(user,pass,mySite);
+    }
+
+    void asyncResult(String result) {
+        SharedPreferences.Editor editor = preferences.edit();
+        pd.dismiss();
+        if(result.equals("error")){
+            Toast.makeText(this, getString(R.string.update_error), Toast.LENGTH_LONG).show();
+        }else {
+            if(renew){
+                updateViewWithResult(result);
+                editor.putString("data", result);
+                editor.apply();
+                Toast.makeText(this,getString(R.string.update_ok) , Toast.LENGTH_LONG).show();
+                renew=false;
+            }else {
+                editor.putString(PREVMONTH,result);
+                editor.apply();
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("result", result);
+                intent.putExtra("parentActivity", "main");
+                startActivity(intent);
+            }
+        }
     }
 
     public static String [][] to2dim (String source, String outerdelim, String innerdelim) {
@@ -113,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
-    void getResult(String result) {
+    void updateViewWithResult(String result) {
         String sDate, sMore, sLess, sTotal;
         int[] colors = new int[2];
         colors[0] = Color.parseColor("#FFCEF7FF");
@@ -238,33 +277,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    void startAsync(String user,String pass,String mySite){
-        mAsync = new GetPrevAsyncTask(this);
-        mAsync.execute(user,pass,mySite);
-    }
-
-    void asyncResult(String result) {
-        SharedPreferences.Editor editor = preferences.edit();
-        if(result.equals("error")){
-            Toast.makeText(this, getString(R.string.update_error), Toast.LENGTH_LONG).show();
-        }else {
-            if(renew){
-                getResult(result);
-                editor.putString("data", result);
-                editor.apply();
-                Toast.makeText(this,getString(R.string.update_ok) , Toast.LENGTH_LONG).show();
-                renew=false;
-            }else {
-                editor.putString(PREVMONTH,result);
-                editor.apply();
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("result", result);
-                intent.putExtra("parentActivity", "main");
-                startActivity(intent);
-            }
-        }
-    }
 
     @Override
     public void onBackPressed()
