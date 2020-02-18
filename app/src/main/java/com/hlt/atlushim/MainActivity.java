@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     DateFormat dateFormat = new SimpleDateFormat("YYYY_MM", Locale.getDefault());
                     date.add(Calendar.MONTH, -1);
-                    //Toast.makeText(this, getString(R.string.prev_month), Toast.LENGTH_LONG).show();
                     startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=" + dateFormat.format(date.getTime()));
                     connectionDialog(this,getString(R.string.prev_month)+" "+dateFormat.format(date.getTime()));
                 }
@@ -91,15 +90,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case "לחדש":
-                connectionDialog(this,getString(R.string.get_update));
-                date = Calendar.getInstance();
                 if (!DetectConnection.checkInternetConnection(this)) {
                     Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_LONG).show();
                 }else {
+                    connectionDialog(this,getString(R.string.get_update));
                     renew = true;
-                    //Toast.makeText(this, getString(R.string.get_update), Toast.LENGTH_LONG).show();
                     startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=start");
-                    //startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=2019_10");
                 }
                 break;
             case "חזרה":
