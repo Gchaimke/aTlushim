@@ -27,17 +27,27 @@ class HtmlParser {
                     .followRedirects(true)
                     .execute();
             System.out.println("HTTP Status Code: " + response.statusCode());
-            System.out.println(response.cookies());
-            Map<String, String> cookies = response.cookies();
+            Map<String,String> cookies = response.cookies();
 
             if(!cookies.isEmpty()) {
-                entry = cookies.entrySet().iterator().next();
-                String key = entry.getKey();
-                String value = entry.getValue();
+                String phpsession = "";
+                String maskorot = "";
+                for (Map.Entry<String, String> cookie : cookies.entrySet()) {
+                    if(cookie.getKey().equals("maskorot")) {
+                        maskorot = cookie.getValue();
+                    }
+                    if(cookie.getKey().equals("PHPSESSID")) {
+                        phpsession = cookie.getValue();
+                    }
+                    System.out.println(cookie.getKey() + "/" + cookie.getValue());
+                }
+
+                System.out.println("phpsession:" +phpsession+" maskorot:"+ maskorot);
                 homePage = Jsoup
                         .connect(site)
                         .method(Connection.Method.GET)
-                        .cookie(key, value)
+                        .cookie("PHPSESSID", phpsession)
+                        .cookie("maskorot", maskorot)
                         .get();
             }
             return getTableRows(homePage);
