@@ -46,8 +46,8 @@ class HtmlParser {
                 homePage = Jsoup
                         .connect(site)
                         .method(Connection.Method.GET)
-                        .cookie("PHPSESSID", phpsession)
                         .cookie("maskorot", maskorot)
+                        .cookie("PHPSESSID", phpsession)
                         .get();
             }
             return getTableRows(homePage);
