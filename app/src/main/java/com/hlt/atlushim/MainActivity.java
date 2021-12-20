@@ -2,7 +2,6 @@ package com.hlt.atlushim;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -30,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     GetPrevAsyncTask mAsync;
     final String PASSWORD = "password";
     final String USERNAME = "username";
-    final String PREVMONTH = "prevMonth";
+    final String PREVIOUS_MONTH = "prevMonth";
 
     SharedPreferences preferences;
     ProgressDialog pd;
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!DetectConnection.checkInternetConnection(this)) {
                     Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_LONG).show();
                 }else {
-                    DateFormat dateFormat = new SimpleDateFormat("YYYY_MM", Locale.getDefault());
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy_MM", Locale.getDefault());
                     date.add(Calendar.MONTH, -1);
                     startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=" + dateFormat.format(date.getTime()));
                     connectionDialog(this,getString(R.string.prev_month)+" "+dateFormat.format(date.getTime()));
@@ -123,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,getString(R.string.update_ok) , Toast.LENGTH_LONG).show();
                 renew=false;
             }else {
-                editor.putString(PREVMONTH,result);
+                editor.putString(PREVIOUS_MONTH,result);
                 editor.apply();
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("result", result);
@@ -279,20 +278,12 @@ public class MainActivity extends AppCompatActivity {
     {
         AlertDialog.Builder builder =new AlertDialog.Builder(this);
         builder.setTitle("לצאת מהתוכנה?");
-        builder.setCancelable(false).setPositiveButton("כן", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                finish();
-            }
-        });
+        builder.setCancelable(false).setPositiveButton("כן", (dialogInterface, i) -> {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }).setNegativeButton("לא", (dialogInterface, i) -> finish());
         Intent intent = getIntent();
         parentActivity = intent.getStringExtra("parentActivity");
         assert parentActivity != null;
