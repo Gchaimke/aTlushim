@@ -16,7 +16,7 @@ class HtmlParser {
         String loginFormUrl = "https://www.tlushim.co.il/login.php";
         formData.put("id_num", user);
         formData.put("password", password);
-        Map.Entry<String,String> entry;
+//        Map.Entry<String,String> entry;
         Document homePage= null;
         try {
             Connection.Response response  = Jsoup.connect(loginFormUrl)
@@ -30,24 +30,24 @@ class HtmlParser {
             Map<String,String> cookies = response.cookies();
 
             if(!cookies.isEmpty()) {
-                String phpsession = "";
+                String php_session = "";
                 String maskorot = "";
                 for (Map.Entry<String, String> cookie : cookies.entrySet()) {
                     if(cookie.getKey().equals("maskorot")) {
                         maskorot = cookie.getValue();
                     }
                     if(cookie.getKey().equals("PHPSESSID")) {
-                        phpsession = cookie.getValue();
+                        php_session = cookie.getValue();
                     }
                     System.out.println(cookie.getKey() + "/" + cookie.getValue());
                 }
 
-                System.out.println("phpsession:" +phpsession+" maskorot:"+ maskorot);
+                System.out.println("php_session:" +php_session+" maskorot:"+ maskorot);
                 homePage = Jsoup
                         .connect(site)
                         .method(Connection.Method.GET)
                         .cookie("maskorot", maskorot)
-                        .cookie("PHPSESSID", phpsession)
+                        .cookie("PHPSESSID", php_session)
                         .get();
             }
             return getTableRows(homePage);

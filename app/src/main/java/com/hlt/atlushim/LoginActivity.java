@@ -9,13 +9,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.snackbar.Snackbar;
-
 public class LoginActivity extends AppCompatActivity {
-
     final String PASSWORD = "password";
     final String USERNAME = "username";
     final String DATA = "data";
@@ -46,11 +42,9 @@ public class LoginActivity extends AppCompatActivity {
     public void loginButtonClick(View view) {
         if (!DetectConnection.checkInternetConnection(this)) {
             setDefaults(this);
-            Snackbar.make(view, "אין אינטרנט", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            Toast.makeText(this, "אין אינטרנט", Toast.LENGTH_LONG).show();
         }else {
-            Snackbar.make(view, "טוען נתונים מאתר", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            Toast.makeText(this, "טוען נתונים מאתר", Toast.LENGTH_LONG).show();
             pBar = findViewById(R.id.progressBar);
             pBar.setVisibility(View.VISIBLE);
             setDefaults(this);

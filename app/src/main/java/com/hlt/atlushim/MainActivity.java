@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     GetPrevAsyncTask mAsync;
     final String PASSWORD = "password";
     final String USERNAME = "username";
-    final String PREVIOUS_MONTH = "prevMonth";
 
     SharedPreferences preferences;
     ProgressDialog pd;
@@ -79,7 +78,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_LONG).show();
                 }else {
                     DateFormat dateFormat = new SimpleDateFormat("yyyy_MM", Locale.getDefault());
-                    date.add(Calendar.MONTH, -1);
+                    if(date.get(Calendar.DAY_OF_MONTH) > 25){
+                        date.add(Calendar.MONTH, 0);
+                    }else {
+                        date.add(Calendar.MONTH, -1);
+                    }
                     startAsync(user, pass, "https://www.tlushim.co.il/main.php?op=atnd&month=" + dateFormat.format(date.getTime()));
                     connectionDialog(this,getString(R.string.prev_month)+" "+dateFormat.format(date.getTime()));
                 }
@@ -122,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,getString(R.string.update_ok) , Toast.LENGTH_LONG).show();
                 renew=false;
             }else {
-                editor.putString(PREVIOUS_MONTH,result);
+                editor.putString("prevMonth",result);
                 editor.apply();
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("result", result);
@@ -132,16 +135,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static String [][] to2dim (String source, String outerdelim, String innerdelim) {
-        // outerdelim may be a group of characters
-        String [] sOuter = source.split ("[" + outerdelim + "]");
+    public static String [][] to2dim (String source, String outer_delimiter, String inner_delimiter) {
+        // outer_delimiter may be a group of characters
+        String [] sOuter = source.split ("[" + outer_delimiter + "]");
         int size = sOuter.length;
         // one dimension of the array has to be known on declaration:
         String [][] result = new String [size][];
         int count = 0;
         for (String line : sOuter)
         {
-            result [count] = line.split (innerdelim);
+            result [count] = line.split (inner_delimiter);
             ++count;
         }
         return result;

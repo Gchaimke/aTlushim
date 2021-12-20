@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 class MyAsyncTask extends AsyncTask<String, Void, String> {
 
     @SuppressLint("StaticFieldLeak")
-    private LoginActivity lClass;
+    private final LoginActivity lClass;
 
     MyAsyncTask(LoginActivity lClass) {
         this.lClass = lClass;
@@ -42,7 +42,7 @@ class MyAsyncTask extends AsyncTask<String, Void, String> {
 class GetPrevAsyncTask extends AsyncTask<String, Void, String> {
 
     @SuppressLint("StaticFieldLeak")
-    private MainActivity mClass;
+    private final MainActivity mClass;
 
     GetPrevAsyncTask(MainActivity mClass) {
         this.mClass = mClass;
